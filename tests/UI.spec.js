@@ -53,7 +53,7 @@ test("User should be able to login", async ({ page }) => {
   );
 });
 
-test("Child windows handling", async ({ browser }) => {
+test("Child window handling", async ({ browser }) => {
   const context = await browser.newContext();
   const page = await context.newPage();
   const url = "https://rahulshettyacademy.com/loginpagePractise/";
@@ -72,7 +72,5 @@ test("Child windows handling", async ({ browser }) => {
   );
 
   const text = await newPage.locator(".red").textContent();
-  console.log(text);
-
   expect(text).toContain("Please email us at mentor@rahulshettyacademy.com");
 });
