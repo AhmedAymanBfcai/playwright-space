@@ -74,3 +74,63 @@ test("Child window handling", async ({ browser }) => {
   const text = await newPage.locator(".red").textContent();
   expect(text).toContain("Please email us at mentor@rahulshettyacademy.com");
 });
+
+test("Playwright Special Locators", async ({ page }) => {
+  const url = "https://rahulshettyacademy.com/angularpractice/";
+  await page.goto(url);
+
+  await page.getByLabel("Check me out if you Love IceCreams!").check();
+  await expect(
+    page.getByLabel("Check me out if you Love IceCreams!")
+  ).toBeChecked();
+
+  await page.getByLabel("Employed").check();
+  await expect(page.getByLabel("Employed")).toBeChecked();
+  await expect(page.getByLabel("Employed")).toHaveValue("option2");
+
+  await page.getByLabel("Gender").selectOption("Female");
+  await page.getByPlaceholder("Password").fill("abc123");
+  await expect(page.getByPlaceholder("Password")).toHaveValue("abc123");
+
+  await page.getByRole("button", { name: "Submit" }).click();
+  // await expect(
+  //   page.getByText("Success! The Form has been submitted successfully.")
+  // ).toBeVisible();
+
+  await page.getByRole("link", { name: "Shop" }).click();
+  await expect(page).toHaveURL(
+    "https://rahulshettyacademy.com/angularpractice/shop"
+  );
+
+  await page
+    .locator("app-card")
+    .filter({ hasText: "Nokia Edge" })
+    .getByRole("button", { name: "Add to Cart" })
+    .click();
+});
+
+test("Handle Calendar", async ({ page }) => {
+  const monthName = "6";
+  const date = "15";
+  const year = "2027";
+  const url = "https://rahulshettyacademy.com/seleniumPractise/#/offers";
+  const expectedList = [monthName, date, year];
+
+  await page.goto(url);
+  await page.locator(".react-date-picker__inputGroup").click();
+  await page.locator(".react-calendar__navigation__label").click();
+  await page.locator(".react-calendar__navigation__label").click();
+  await page.getByText(year).click();
+  await page
+    .locator(".react-calendar__year-view__months__month")
+    .nth(Number(monthName) - 1)
+    .click();
+
+  await page.locator("//abbr[text()='" + date + "']").click();
+
+  const inputs = await page.locator(".react-date-picker__inputGroup input");
+  for (let i = 0; i < inputs.length; i++) {
+    const actualList = await inputs[i].getAttributes("value");
+    expect(actualList).toEqual(expectedList[i]);
+  }
+});
