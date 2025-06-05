@@ -134,3 +134,52 @@ test("Handle Calendar", async ({ page }) => {
     expect(actualList).toEqual(expectedList[i]);
   }
 });
+
+test("Popup handling", async ({ page }) => {
+  const url = "https://rahulshettyacademy.com/AutomationPractice/";
+  await page.goto(url);
+
+  // await page.goto("https://google.com");
+  // await page.goBack();
+  // await page.goForward();
+  // await page.reload();
+
+  await expect(page.locator("#displayed-text")).toBeVisible();
+  await page.locator("#hide-textbox").click();
+  await expect(page.locator("#displayed-text")).toBeHidden();
+  await page.pause();
+  page.on("dialog", (dialog) => dialog.accept());
+  await page.locator("#confirmbtn").click();
+  await page.locator("#mousehover").hover();
+  await expect(page.locator(".mouse-hover-content")).toBeVisible();
+  page
+    .frameLocator("#courses-iframe")
+    .getByRole("link", { name: "Courses" })
+    .click();
+  await expect(page).toHaveURL("https://rahulshettyacademy.com/courses/");
+});
+
+test("Handle Alerts", async ({ page }) => {
+  const url = "https://rahulshettyacademy.com/AutomationPractice/";
+  await page.goto(url);
+
+  await page.locator("#alertbtn").click();
+  page.on("dialog", async (dialog) => {
+    expect(dialog.type()).toBe("confirm");
+    expect(dialog.message()).toBe("Hello , Are you sure you want to confirm?");
+    await dialog.accept();
+  });
+
+  await page.locator("#confirmbtn").click();
+  page.on("dialog", async (dialog) => {
+    expect(dialog.type()).toBe("confirm");
+    expect(dialog.message()).toBe("Hello , Are you sure you want to confirm?");
+    await dialog.dismiss();
+  });
+});
+
+test("Handle Frames", async ({ page }) => {
+  const url = "https://rahulshettyacademy.com/AutomationPractice/";
+  await page.goto(url);
+  const frame = page.frameLocator("#courses-iframe");
+});
